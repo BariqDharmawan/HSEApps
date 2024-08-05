@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { EvilIcons } from '@expo/vector-icons';
 import { GestureResponderEvent } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
@@ -13,7 +14,7 @@ const CloseButton = ({
             rippleColor="rgba(0, 0, 0, .32)"
             style={{
                 position: 'absolute',
-                backgroundColor: '#fff',
+                backgroundColor: Colors.white,
                 borderRadius: 20,
                 right: 0,
                 top: 0,

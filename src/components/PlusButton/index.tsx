@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { useEffect, useState } from 'react';
 import { Dimensions, StyleProp, ViewStyle } from 'react-native';
 import { FAB } from 'react-native-paper';
@@ -12,15 +13,15 @@ const PlusButton = ({
     style?: StyleProp<ViewStyle>;
 }) => {
     const [color, setColor] = useState({
-        background: '#2196F3',
-        text: '#fff',
+        background: Colors.blue.material,
+        text: Colors.white,
     });
 
     useEffect(() => {
         if (inverted) {
             setColor({
-                background: '#fff',
-                text: '#2196F3',
+                background: Colors.white,
+                text: Colors.blue.material,
             });
         }
     }, [inverted]);

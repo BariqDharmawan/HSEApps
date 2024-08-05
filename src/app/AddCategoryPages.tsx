@@ -1,36 +1,52 @@
-import BoxDivider from '@/components/BoxDivider';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Button, RadioButton,  Text, TextInput } from 'react-native-paper';
+import { Button, IconButton, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFormik } from 'formik';
+import BoxDivider from '@/components/BoxDivider';
 import PlusButton from '@/components/PlusButton';
 import CloseButton from '@/components/CloseButton';
-import SwitcherLabel from '@/components/SwitcherLabel';
-import { useFormik } from 'formik';
-
-const inputTypes = [
-    { label: 'Textbox', value: 'textbox' },
-    { label: 'Switcher', value: 'switcher' },
-    { label: 'Textarea', value: 'textarea' },
-];
-
-type FormValues = {
-    [K in `title_${number}_required`]: boolean;
-  };
-  
+import { inputTypes, TInputValue } from '@/constants/select-options';
+import { IFormCategoryValues, IInitInputSection } from '@/utils/data';
+import RadioLabel from '@/components/RadioLabel';
+import { generateRandomString, isCheckedOrUnchecked } from '@/utils/strNumber';
+import { Colors } from '@/constants/Colors';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import RenderCondition from '@/components/RenderCondition';
+import { removeAndReorderKeys, resetKeys } from '@/utils/arrObj';
+import FormCategorySection from '@/components/FormCategorySection';
+import FormCategoryInputs from '@/components/FormCategoryInputs';
 
 const AddCategoryPages = () => {
-    const [sectionBox, setSectionBox] = useState([['input-0']]);
+    const [allSection, setAllSection] = useState(`section-${generateRandomString(4)}`);
+    const [sectionBox, setSectionBox] = useState([
+        [
+            {
+                name: 'input-0-0',
+                dropdowns: [],
+            },
+        ],
+    ]);
 
-    const formik = useFormik<FormValues>({
-        initialValues: {
-            [`title_${0}_required`]: false
+    const initInputEachSection: IInitInputSection[] = [
+        {
+            input_label: '',
+            input_type: '',
+            input_dropdown: [''],
         },
-        onSubmit: (values) => {
-            console.log(values);
-        }
-    })
-    
+    ];
+
+    const formik = useFormik<IFormCategoryValues>({
+        initialValues: {
+            section_0: {
+                title: '',
+                inputs: initInputEachSection,
+            },
+        },
+        onSubmit: (values) => {},
+    });
+
+    console.log(JSON.stringify(formik.values, null, 2));
 
     return (
         <>
@@ -40,149 +56,81 @@ const AddCategoryPages = () => {
                         paddingHorizontal: 16,
                     }}
                 >
-                    {sectionBox.map((eachSection, indexSec, arrSec) => (
-                        <BoxDivider
-                            key={`section-${indexSec}`}
-                            style={{
-                                backgroundColor: '#fff',
-                                marginBottom: 30,
-                            }}
-                        >
-                            <BoxDivider
-                                style={{
-                                    backgroundColor: '#fff',
-                                }}
-                            >
-                                <TextInput
-                                    label="Title section"
-                                    mode="flat"
+                    {Object.keys(formik.values).map((eachSection, indexSec) => {
+                        const formikSection = formik.values[eachSection as keyof IFormCategoryValues];
+
+                        return (
+                            <FormCategorySection formik={formik} index={indexSec} key={`each-${eachSection}`}>
+                                <BoxDivider
                                     style={{
-                                        flexGrow: 1,
-                                        borderBottomWidth: 1,
-                                        borderBottomColor: '#C1C1C1',
-                                    }}
-                                    blurOnSubmit
-                                />
-
-                                <SwitcherLabel value={Boolean(formik.values[(`title_${indexSec}_required`)])} label='Is required?' onValueChange={(isChecked) => {
-                                    formik.setFieldValue(`title_${indexSec}_required`, isChecked)
-                                }} />
-                            </BoxDivider>
-
-                            <BoxDivider
-                                style={{
-                                    backgroundColor: '#fff',
-                                    marginTop: 20,
-                                    gap: 20,
-                                    padding: 30,
-                                }}
-                            >
-                                {eachSection.map((el, indexArr, arr) => (
-                                    <BoxDivider
-                                        style={{
-                                            position: 'relative',
-                                            paddingBottom: indexArr === arr.length - 1 ? 40 : 0,
-                                        }}
-                                    >
-                                        {arr.length > 1 && (
-                                            <CloseButton
-                                                onPress={() => {
-                                                    setSectionBox((prevSectionBox) =>
-                                                        prevSectionBox.map((innerArray, index) =>
-                                                            index === indexSec
-                                                                ? innerArray.filter((_, i) => i !== indexArr)
-                                                                : innerArray
-                                                        )
-                                                    );
-                                                }}
-                                            />
-                                        )}
-
-                                        <TextInput
-                                            label={`Put the label input ${indexArr}`}
-                                            mode="flat"
-                                            style={{
-                                                borderBottomWidth: 1,
-                                                borderBottomColor: '#C1C1C1',
-                                            }}
-                                            blurOnSubmit
-                                        />
-
-                                        <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
-                                            {inputTypes.map((type) => (
-                                                <View>
-                                                    <Text>{type.label}</Text>
-                                                    <RadioButton
-                                                        key={type.label.replaceAll(' ', '-')}
-                                                        value={type.value}
-                                                        status={
-                                                            type.value === inputTypes[0].value ? 'checked' : 'unchecked'
-                                                        }
-                                                    />
-                                                </View>
-                                            ))}
-                                        </View>
-                                    </BoxDivider>
-                                ))}
-
-                                <PlusButton
-                                    inverted={false}
-                                    style={{
-                                        alignSelf: 'center',
-                                        marginTop: -50,
-                                    }}
-                                    onPress={() => {
-                                        setSectionBox((prevSectionBox) =>
-                                            prevSectionBox.map((innerArray, index) =>
-                                                index === indexSec
-                                                    ? [...innerArray, `input-${indexSec}-${innerArray.length}`]
-                                                    : innerArray
-                                            )
-                                        );
-                                    }}
-                                />
-                            </BoxDivider>
-
-                            {arrSec.length > 1 && (
-                                <Button
-                                    mode="contained"
-                                    textColor="#d04242"
-                                    buttonColor="#fff"
-                                    style={{
+                                        backgroundColor: Colors.white,
                                         marginTop: 20,
-                                        alignSelf: 'center',
-                                        borderWidth: 1,
-                                        borderColor: '#d04242',
+                                        gap: 20,
+                                        padding: 30,
                                     }}
-                                    onPress={() => {
-                                        setSectionBox((prevSectionBox) =>
-                                            prevSectionBox.filter((_, index) => index !== indexSec)
-                                        );
-                                    }}
-                                    dark
                                 >
-                                    Remove Section
-                                </Button>
-                            )}
-                        </BoxDivider>
-                    ))}
+                                    {formikSection.inputs.map((_, indexArr) => (
+                                        <FormCategoryInputs
+                                            key={`each-input-${indexArr}`}
+                                            currentDropdown={formikSection.inputs[indexArr].input_dropdown}
+                                            formik={formik}
+                                            indexInput={indexArr}
+                                            indexSection={indexSec}
+                                            isDeleteAble={formikSection.inputs.length > 1}
+                                            isLast={indexArr === formikSection.inputs.length - 1}
+                                            onDelete={() => {
+                                                setSectionBox((prevSectionBox) =>
+                                                    prevSectionBox.map((innerArray, index) =>
+                                                        index === indexSec
+                                                            ? innerArray.filter((_, i) => i !== indexArr)
+                                                            : innerArray
+                                                    )
+                                                );
+                                            }}
+                                        />
+                                    ))}
+
+                                    <PlusButton
+                                        inverted={false}
+                                        style={{
+                                            alignSelf: 'center',
+                                            marginTop: -50,
+                                        }}
+                                        onPress={() => {
+                                            const totalInput = formikSection.inputs.length;
+
+                                            formik.setFieldValue(
+                                                `${Object.keys(formik.values)[indexSec]}.inputs[${totalInput}]`,
+                                                {
+                                                    input_label: '',
+                                                    input_type: '',
+                                                    input_dropdown: [''],
+                                                }
+                                            );
+                                        }}
+                                    />
+                                </BoxDivider>
+                            </FormCategorySection>
+                        );
+                    })}
 
                     <Button
                         mode="contained"
-                        textColor="#2196F3"
-                        buttonColor="#fff"
+                        textColor={Colors.blue.material}
+                        buttonColor={Colors.white}
                         style={{
                             alignSelf: 'center',
                             alignContent: 'center',
                             marginBottom: 130,
                             borderWidth: 1,
-                            borderColor: '#2196F3',
+                            borderColor: Colors.blue.material,
                         }}
                         onPress={() => {
-                            setSectionBox((prevSectionBox) => [
-                                ...prevSectionBox,
-                                [`input-${prevSectionBox.length}-0`],
-                            ]);
+                            const totalSection = Object.keys(formik.values).length;
+                            formik.setFieldValue(`section_${totalSection}`, {
+                                title: '',
+                                inputs: initInputEachSection,
+                            });
                         }}
                         dark
                     >
@@ -199,7 +147,7 @@ const AddCategoryPages = () => {
                     left: 0,
                     padding: 20,
                     elevation: 70,
-                    backgroundColor: '#fff',
+                    backgroundColor: Colors.white,
                     shadowOffset: {
                         width: 0,
                         height: 3,
@@ -213,7 +161,7 @@ const AddCategoryPages = () => {
                     label="Category name"
                     mode="outlined"
                     style={{
-                        backgroundColor: '#fff',
+                        backgroundColor: Colors.white,
                     }}
                     outlineStyle={{
                         borderColor: '#e8e6e6',

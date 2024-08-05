@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { PaperProvider } from 'react-native-paper';
+import { Colors } from '@/constants/Colors';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -31,7 +32,7 @@ export default function RootLayout() {
                 ...DefaultTheme,
                 colors: {
                     ...DefaultTheme.colors,
-                    primary: '#2196F3',
+                    primary: Colors.blue.material,
                 },
             }}
         >

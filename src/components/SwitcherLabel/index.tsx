@@ -1,7 +1,15 @@
 import { View } from 'react-native';
 import { Switch, Text } from 'react-native-paper';
 
-const SwitcherLabel = ({ label, onValueChange, value }: {value?: boolean; onValueChange?: (((value: boolean) => Promise<void> | void) & Function); label: string }) => {
+const SwitcherLabel = ({
+    label,
+    onValueChange,
+    value,
+}: {
+    value?: boolean;
+    onValueChange?: ((value: boolean) => Promise<void> | void) & Function;
+    label: string;
+}) => {
     return (
         <View
             style={{
