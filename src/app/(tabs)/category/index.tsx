@@ -2,16 +2,15 @@ import CardCategory from '@/components/CardCategory';
 import PlusButton from '@/components/PlusButton';
 import useGetCategory from '@/hooks/useGetCategory';
 import { Link } from 'expo-router';
-import { Dimensions, FlatList, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { FAB as Fab } from 'react-native-paper';
+import {  FlatList, SafeAreaView,  StyleSheet } from 'react-native';
 
 const CategoryScreen = () => {
-    const { posts } = useGetCategory();
+    const { data: categories } = useGetCategory();
 
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
-                data={posts}
+                data={categories}
                 columnWrapperStyle={{
                     gap: 20,
                 }}
@@ -19,11 +18,11 @@ const CategoryScreen = () => {
                     gap: 20,
                 }}
                 renderItem={({ item: post }) => (
-                    <CardCategory imgSrc="https://picsum.photos/700" title={post.title} btnLabel="Lihat Laporan" />
+                    <CardCategory imgSrc="https://picsum.photos/700" title={post.label} btnLabel="Lihat Laporan" />
                 )}
                 numColumns={2}
                 key={2}
-                keyExtractor={(item) => item.title.replaceAll(' ', '-')}
+                keyExtractor={(item) => item.label.replaceAll(' ', '-')}
             />
             <Link href="/AddCategoryPages" style={styles.tabHref} asChild>
                 <PlusButton />
@@ -37,12 +36,13 @@ const styles = StyleSheet.create({
         position: 'relative',
         marginTop: 50,
         paddingVertical: 10,
+        flex: 1,
         paddingHorizontal: 20,
     },
     tabHref: {
         position: 'absolute',
         left: '50%',
-        bottom: 16,
+        bottom: 24,
         marginLeft: -10,
     },
 });

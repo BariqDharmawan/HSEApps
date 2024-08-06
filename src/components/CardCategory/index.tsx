@@ -1,13 +1,12 @@
 import { truncateString } from '@/utils/strNumber';
-import Str from '@supercharge/strings';
 import { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 
 async function fetchHello() {
-    const response = await fetch('/category');
+    const response = await fetch(`${process.env.EXPO_PUBLIC_DOMAIN}/hello`);
+    console.log(response);
     const data = await response.json();
-    console.log(data);
 }
 
 const CardCategory = ({ title, btnLabel, imgSrc }: { imgSrc: string; title: string; btnLabel: ReactNode | string }) => {

@@ -18,18 +18,10 @@ import FormCategorySection from '@/components/FormCategorySection';
 import FormCategoryInputs from '@/components/FormCategoryInputs';
 
 const AddCategoryPages = () => {
-    const [allSection, setAllSection] = useState(`section-${generateRandomString(4)}`);
-    const [sectionBox, setSectionBox] = useState([
-        [
-            {
-                name: 'input-0-0',
-                dropdowns: [],
-            },
-        ],
-    ]);
 
     const initInputEachSection: IInitInputSection[] = [
         {
+            input_id: generateRandomString(4),
             input_label: '',
             input_type: '',
             input_dropdown: [''],
@@ -57,10 +49,9 @@ const AddCategoryPages = () => {
                     }}
                 >
                     {Object.keys(formik.values).map((eachSection, indexSec) => {
-                        const formikSection = formik.values[eachSection as keyof IFormCategoryValues];
 
                         return (
-                            <FormCategorySection formik={formik} index={indexSec} key={`each-${eachSection}`}>
+                            <FormCategorySection formik={formik} index={indexSec} key={`each-section-${indexSec}`}>
                                 <BoxDivider
                                     style={{
                                         backgroundColor: Colors.white,
@@ -69,23 +60,19 @@ const AddCategoryPages = () => {
                                         padding: 30,
                                     }}
                                 >
-                                    {formikSection.inputs.map((_, indexArr) => (
+                                    {formik.values[`section_${indexSec}`].inputs.map((eachInput, indexArr) => (
                                         <FormCategoryInputs
-                                            key={`each-input-${indexArr}`}
-                                            currentDropdown={formikSection.inputs[indexArr].input_dropdown}
+                                            key={eachInput.input_id}
+                                            currentDropdown={formik.values[`section_${indexSec}`].inputs[indexArr].input_dropdown}
                                             formik={formik}
                                             indexInput={indexArr}
                                             indexSection={indexSec}
-                                            isDeleteAble={formikSection.inputs.length > 1}
-                                            isLast={indexArr === formikSection.inputs.length - 1}
-                                            onDelete={() => {
-                                                setSectionBox((prevSectionBox) =>
-                                                    prevSectionBox.map((innerArray, index) =>
-                                                        index === indexSec
-                                                            ? innerArray.filter((_, i) => i !== indexArr)
-                                                            : innerArray
-                                                    )
-                                                );
+                                            isDeleteAble={formik.values[`section_${indexSec}`].inputs.length > 1}
+                                            isLast={indexArr === formik.values[`section_${indexSec}`].inputs.length - 1}
+                                            onDelete={async () => {
+                                                console.log(indexArr, formik.values[`section_${indexSec}`].inputs.filter((_, indexInput) => indexArr !== indexInput));
+                                                
+                                                await formik.setFieldValue(`section_${indexSec}.inputs`, formik.values[`section_${indexSec}`].inputs.filter((_, indexInput) => indexArr !== indexInput))
                                             }}
                                         />
                                     ))}
@@ -97,11 +84,12 @@ const AddCategoryPages = () => {
                                             marginTop: -50,
                                         }}
                                         onPress={() => {
-                                            const totalInput = formikSection.inputs.length;
+                                            const totalInput = formik.values[`section_${indexSec}`].inputs.length;
 
                                             formik.setFieldValue(
                                                 `${Object.keys(formik.values)[indexSec]}.inputs[${totalInput}]`,
                                                 {
+                                                    input_id: generateRandomString(4),
                                                     input_label: '',
                                                     input_type: '',
                                                     input_dropdown: [''],
