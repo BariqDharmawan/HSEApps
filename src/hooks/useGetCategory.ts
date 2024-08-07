@@ -4,23 +4,23 @@ import { PostgrestError } from '@supabase/supabase-js';
 import { useEffect, useState } from 'react';
 
 const useGetCategory = () => {
-    const [datas, setDatas] = useState<ICategory[]>([])
-    const [fetchState, setFetchState] = useState<{isLoading: boolean; error: PostgrestError | null}>({
+    const [datas, setDatas] = useState<ICategory[]>([]);
+    const [fetchState, setFetchState] = useState<{ isLoading: boolean; error: PostgrestError | null }>({
         isLoading: false,
-        error: null
-    })
+        error: null,
+    });
 
     const getCategories = async () => {
-        setFetchState({isLoading: true, error: null})
-        let { data: categories, error } = await supabase.from('categories').select('*')
-        setFetchState({isLoading: false, error})
-        
-        setDatas(categories as ICategory[])
-    }
+        setFetchState({ isLoading: true, error: null });
+        let { data: categories, error } = await supabase.from('categories').select('*');
+        setFetchState({ isLoading: false, error });
+
+        setDatas(categories as ICategory[]);
+    };
 
     useEffect(() => {
-        getCategories()
-    }, [])
+        getCategories();
+    }, []);
 
     return {
         data: datas,

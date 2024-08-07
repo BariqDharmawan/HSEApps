@@ -2,11 +2,11 @@ import CardCategory from '@/components/CardCategory';
 import PlusButton from '@/components/PlusButton';
 import useGetCategory from '@/hooks/useGetCategory';
 import { Link } from 'expo-router';
-import {  FlatList, SafeAreaView,  StyleSheet } from 'react-native';
+import { FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 const CategoryScreen = () => {
     const { data: categories } = useGetCategory();
-
+    
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -18,7 +18,7 @@ const CategoryScreen = () => {
                     gap: 20,
                 }}
                 renderItem={({ item: post }) => (
-                    <CardCategory imgSrc="https://picsum.photos/700" title={post.label} btnLabel="Lihat Laporan" />
+                    <CardCategory imgSrc="https://picsum.photos/700" id={post.id} title={post.label} btnLabel="Lihat Laporan" />
                 )}
                 numColumns={2}
                 key={2}

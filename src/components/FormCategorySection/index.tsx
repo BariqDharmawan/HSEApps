@@ -20,29 +20,29 @@ const FormCategorySection = ({
                 marginBottom: 30,
             }}
         >
-            <BoxDivider
+            {/* <BoxDivider
                 style={{
                     backgroundColor: Colors.white,
                 }}
-            >
-                <TextInput
-                    label="Big question"
-                    mode="flat"
-                    style={{
-                        flexGrow: 1,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#C1C1C1',
-                    }}
-                    value={formik.values[`section_${index}`].title}
-                    onChangeText={(value) => {
-                        formik.setFieldValue(Object.keys(formik.values)[index], {
-                            title: value,
-                            inputs: formik.values[`section_${index}`].inputs,
-                        });
-                    }}
-                    blurOnSubmit
-                />
-            </BoxDivider>
+            > */}
+            <TextInput
+                label="Big question"
+                mode="flat"
+                style={{
+                    flexGrow: 1,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#C1C1C1',
+                }}
+                value={formik.values[`section_${index}`].title}
+                onChangeText={(value) => {
+                    formik.setFieldValue(Object.keys(formik.values)[index], {
+                        title: value,
+                        inputs: formik.values[`section_${index}`].inputs,
+                    });
+                }}
+                blurOnSubmit
+            />
+            {/* </BoxDivider> */}
             {children}
 
             <RenderCondition

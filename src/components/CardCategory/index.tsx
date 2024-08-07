@@ -1,15 +1,12 @@
 import { truncateString } from '@/utils/strNumber';
+import { useRouter } from 'expo-router';
 import { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 
-async function fetchHello() {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_DOMAIN}/hello`);
-    console.log(response);
-    const data = await response.json();
-}
+const CardCategory = ({ title, btnLabel, imgSrc, id }: { id: string; imgSrc: string; title: string; btnLabel: ReactNode | string }) => {
+    const router = useRouter()
 
-const CardCategory = ({ title, btnLabel, imgSrc }: { imgSrc: string; title: string; btnLabel: ReactNode | string }) => {
     return (
         <Card style={styles.item} mode="outlined">
             <Card.Cover
@@ -28,7 +25,9 @@ const CardCategory = ({ title, btnLabel, imgSrc }: { imgSrc: string; title: stri
                 <Text style={styles.title} variant="titleMedium">
                     {truncateString(title, 20)}
                 </Text>
-                <Button mode="contained" style={styles.action} onPress={() => fetchHello()} dark compact>
+                <Button mode="contained" style={styles.action} onPress={() => {
+                    router.push(`/category/${id}`)
+                }} dark compact>
                     {btnLabel}
                 </Button>
             </Card.Content>

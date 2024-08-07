@@ -17,4 +17,19 @@ export interface IInitInputSection {
 
 export type TRadioChecked = 'checked' | 'unchecked';
 
-export interface ICategory {id: string; label: string; created_at: Date}
+export interface ICategory {
+    id: string;
+    label: string;
+    created_at: Date;
+}
+
+export interface IPayloadCategory {
+    label: string;
+    id?: string;
+}
+
+export interface IPayloadInputCategory {
+    inputs: object;
+    category_id: string;
+    section_title: string;
+}

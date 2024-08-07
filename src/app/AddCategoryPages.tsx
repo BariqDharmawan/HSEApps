@@ -1,23 +1,23 @@
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Button, IconButton, TextInput } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFormik } from 'formik';
 import BoxDivider from '@/components/BoxDivider';
 import PlusButton from '@/components/PlusButton';
-import CloseButton from '@/components/CloseButton';
-import { inputTypes, TInputValue } from '@/constants/select-options';
-import { IFormCategoryValues, IInitInputSection } from '@/utils/data';
-import RadioLabel from '@/components/RadioLabel';
-import { generateRandomString, isCheckedOrUnchecked } from '@/utils/strNumber';
+import { IFormCategoryValues, IInitInputSection, IPayloadInputCategory } from '@/utils/data';
+import { generateRandomString } from '@/utils/strNumber';
 import { Colors } from '@/constants/Colors';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import RenderCondition from '@/components/RenderCondition';
-import { removeAndReorderKeys, resetKeys } from '@/utils/arrObj';
 import FormCategorySection from '@/components/FormCategorySection';
 import FormCategoryInputs from '@/components/FormCategoryInputs';
+import useManageCategory from '@/hooks/useManageCategory';
+import { useRouter } from 'expo-router';
+import 'react-native-get-random-values';
+import { uuid } from 'uuidv4';
 
 const AddCategoryPages = () => {
+    const router = useRouter()
+    const [categoryName, setCategoryName] = useState('')
 
     const initInputEachSection: IInitInputSection[] = [
         {
@@ -28,30 +28,80 @@ const AddCategoryPages = () => {
         },
     ];
 
-    const formik = useFormik<IFormCategoryValues>({
+    const { addCategory, addInputCategory } = useManageCategory()
+
+    const formikInputs = useFormik<IFormCategoryValues>({
         initialValues: {
             section_0: {
                 title: '',
                 inputs: initInputEachSection,
             },
         },
-        onSubmit: (values) => {},
-    });
+        onSubmit: (values) => {
+            const categoryId = uuid()
 
-    console.log(JSON.stringify(formik.values, null, 2));
+            addCategory({
+                id: categoryId,
+                label: categoryName
+            })
+
+            const inputSection = Object.keys(values).map(value => formikInputs.values[value as keyof IFormCategoryValues].inputs)
+
+            const saveData: IPayloadInputCategory[] = Object.keys(formikInputs.values).map(section => ({
+                section_title: section,
+                inputs: inputSection,
+                category_id: categoryId
+            }))
+
+            addInputCategory(saveData)
+
+            router.push('/category')
+        },
+    });    
 
     return (
         <>
             <SafeAreaView>
+                <View style={{
+                    paddingHorizontal: 16,
+                    paddingBottom: 20,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#CECECE'
+                }}>
+                <Button mode='contained-tonal' buttonColor={Colors.blue.material} style={{
+                        borderRadius: 8,
+                        bottom: 0,
+                    }} onPress={() => {
+                        formikInputs.handleSubmit()
+                    }} dark>Add new category</Button>
+                </View>
+            
                 <ScrollView
                     style={{
+                        paddingTop: 16,
                         paddingHorizontal: 16,
                     }}
                 >
-                    {Object.keys(formik.values).map((eachSection, indexSec) => {
+                    <TextInput
+                    label="Category name"
+                    mode="outlined"
+                    style={{
+                        marginBottom: 30,
+                        backgroundColor: Colors.white,
+                    }}
+                    value={categoryName}
+                    outlineStyle={{
+                        borderColor: '#e8e6e6',
+                    }}
+                    onChangeText={value => {
+                        setCategoryName(value)
+                    }}
+                    blurOnSubmit
+                />
 
+                    {Object.keys(formikInputs.values).map((eachSection, indexSec) => {
                         return (
-                            <FormCategorySection formik={formik} index={indexSec} key={`each-section-${indexSec}`}>
+                            <FormCategorySection formik={formikInputs} index={indexSec} key={`each-section-${indexSec}`}>
                                 <BoxDivider
                                     style={{
                                         backgroundColor: Colors.white,
@@ -60,19 +110,24 @@ const AddCategoryPages = () => {
                                         padding: 30,
                                     }}
                                 >
-                                    {formik.values[`section_${indexSec}`].inputs.map((eachInput, indexArr) => (
+                                    {formikInputs.values[`section_${indexSec}`].inputs.map((eachInput, indexArr) => (
                                         <FormCategoryInputs
                                             key={eachInput.input_id}
-                                            currentDropdown={formik.values[`section_${indexSec}`].inputs[indexArr].input_dropdown}
-                                            formik={formik}
+                                            currentDropdown={
+                                                formikInputs.values[`section_${indexSec}`].inputs[indexArr].input_dropdown
+                                            }
+                                            formik={formikInputs}
                                             indexInput={indexArr}
                                             indexSection={indexSec}
-                                            isDeleteAble={formik.values[`section_${indexSec}`].inputs.length > 1}
-                                            isLast={indexArr === formik.values[`section_${indexSec}`].inputs.length - 1}
+                                            isDeleteAble={formikInputs.values[`section_${indexSec}`].inputs.length > 1}
+                                            isLast={indexArr === formikInputs.values[`section_${indexSec}`].inputs.length - 1}
                                             onDelete={async () => {
-                                                console.log(indexArr, formik.values[`section_${indexSec}`].inputs.filter((_, indexInput) => indexArr !== indexInput));
-                                                
-                                                await formik.setFieldValue(`section_${indexSec}.inputs`, formik.values[`section_${indexSec}`].inputs.filter((_, indexInput) => indexArr !== indexInput))
+                                                await formikInputs.setFieldValue(
+                                                    `section_${indexSec}.inputs`,
+                                                    formikInputs.values[`section_${indexSec}`].inputs.filter(
+                                                        (_, indexInput) => indexArr !== indexInput
+                                                    )
+                                                );
                                             }}
                                         />
                                     ))}
@@ -84,10 +139,10 @@ const AddCategoryPages = () => {
                                             marginTop: -50,
                                         }}
                                         onPress={() => {
-                                            const totalInput = formik.values[`section_${indexSec}`].inputs.length;
+                                            const totalInput = formikInputs.values[`section_${indexSec}`].inputs.length;
 
-                                            formik.setFieldValue(
-                                                `${Object.keys(formik.values)[indexSec]}.inputs[${totalInput}]`,
+                                            formikInputs.setFieldValue(
+                                                `${Object.keys(formikInputs.values)[indexSec]}.inputs[${totalInput}]`,
                                                 {
                                                     input_id: generateRandomString(4),
                                                     input_label: '',
@@ -102,6 +157,10 @@ const AddCategoryPages = () => {
                         );
                     })}
 
+                    <View style={{
+                        marginBottom: 100,
+                    }}>
+
                     <Button
                         mode="contained"
                         textColor={Colors.blue.material}
@@ -109,13 +168,12 @@ const AddCategoryPages = () => {
                         style={{
                             alignSelf: 'center',
                             alignContent: 'center',
-                            marginBottom: 130,
                             borderWidth: 1,
                             borderColor: Colors.blue.material,
                         }}
                         onPress={() => {
-                            const totalSection = Object.keys(formik.values).length;
-                            formik.setFieldValue(`section_${totalSection}`, {
+                            const totalSection = Object.keys(formikInputs.values).length;
+                            formikInputs.setFieldValue(`section_${totalSection}`, {
                                 title: '',
                                 inputs: initInputEachSection,
                             });
@@ -124,39 +182,15 @@ const AddCategoryPages = () => {
                     >
                         Tambah Section
                     </Button>
+
+                    
+
+                    </View>
                 </ScrollView>
+
+               
             </SafeAreaView>
-            <View
-                style={{
-                    zIndex: 10,
-                    position: 'absolute',
-                    bottom: 0,
-                    width: '100%',
-                    left: 0,
-                    padding: 20,
-                    elevation: 70,
-                    backgroundColor: Colors.white,
-                    shadowOffset: {
-                        width: 0,
-                        height: 3,
-                    },
-                    borderTopWidth: 1,
-                    borderTopColor: '#e8e6e6',
-                    shadowColor: '#000',
-                }}
-            >
-                <TextInput
-                    label="Category name"
-                    mode="outlined"
-                    style={{
-                        backgroundColor: Colors.white,
-                    }}
-                    outlineStyle={{
-                        borderColor: '#e8e6e6',
-                    }}
-                    blurOnSubmit
-                />
-            </View>
+            
         </>
     );
 };
