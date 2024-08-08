@@ -1,11 +1,13 @@
 import { TInputValue } from '@/constants/select-options';
 
+type Tontainer = `container_${number}`;
 type TSection = `section_${number}`;
 export type IFormCategoryValues = {
-    [key: TSection]: {
+    container_title: string;
+    section: {
         title: string;
         inputs: IInitInputSection[];
-    };
+    }[];
 };
 
 export interface IInitInputSection {
@@ -31,5 +33,12 @@ export interface IPayloadCategory {
 export interface IPayloadInputCategory {
     inputs: object;
     category_id: string;
+    container_title: string;
+}
+
+export interface ICategoryFields {
+    inputs: string;
+    category_id: string;
     section_title: string;
+    id: number;
 }

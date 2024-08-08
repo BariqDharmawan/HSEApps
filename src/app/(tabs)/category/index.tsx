@@ -6,7 +6,7 @@ import { FlatList, SafeAreaView, StyleSheet } from 'react-native';
 
 const CategoryScreen = () => {
     const { data: categories } = useGetCategory();
-    
+
     return (
         <SafeAreaView style={styles.container}>
             <FlatList
@@ -18,7 +18,12 @@ const CategoryScreen = () => {
                     gap: 20,
                 }}
                 renderItem={({ item: post }) => (
-                    <CardCategory imgSrc="https://picsum.photos/700" id={post.id} title={post.label} btnLabel="Lihat Laporan" />
+                    <CardCategory
+                        imgSrc="https://picsum.photos/700"
+                        id={post.id}
+                        title={post.label}
+                        btnLabel="Lihat Laporan"
+                    />
                 )}
                 numColumns={2}
                 key={2}

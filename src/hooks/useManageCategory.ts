@@ -3,15 +3,12 @@ import { supabase } from '@/utils/supabase';
 
 const useManageCategory = () => {
     const addCategory = async ({ label, id }: IPayloadCategory) => {
-        let dataToInsert: IPayloadCategory = { label }
+        let dataToInsert: IPayloadCategory = { label };
         if (id) {
-            dataToInsert.id = id
+            dataToInsert.id = id;
         }
 
-        const { data, error } = await supabase
-            .from('categories')
-            .insert(dataToInsert)
-            .select().maybeSingle();
+        const { data, error } = await supabase.from('categories').insert(dataToInsert).select().maybeSingle();
 
         return {
             data: data as ICategory,
@@ -19,20 +16,14 @@ const useManageCategory = () => {
         };
     };
 
-    const addInputCategory = async (rows: IPayloadInputCategory[]) => {        
-        console.log('rows', rows);
-        
-        const { data, error } = await supabase
-        .from('category_inputs')
-        .insert(rows)
-        .select()
-        
+    const addInputCategory = async (rows: IPayloadInputCategory[]) => {
+        const { data, error } = await supabase.from('category_inputs').insert(rows).select();
 
         return {
             data,
-            error
-        }
-    }
+            error,
+        };
+    };
 
     return {
         addInputCategory,

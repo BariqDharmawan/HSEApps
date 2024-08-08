@@ -1,23 +1,33 @@
-import { ICategory } from "@/utils/data";
-import { supabase } from "@/utils/supabase";
-import { useEffect, useState } from "react";
+import { ICategory, ICategoryFields } from '@/utils/data';
+import { supabase } from '@/utils/supabase';
+import { useEffect, useState } from 'react';
 
-const useGetDetailCategory = ({id}: {id: ICategory['id']}) => {
-    const [category, setCategory] = useState(undefined)
+const useGetDetailCategory = ({ id, getFields }: { id: ICategory['id']; getFields?: boolean }) => {
+    const [category, setCategory] = useState(undefined);
+    const [fields, setFields] = useState<ICategoryFields[]>([]);
 
     const getCategory = async () => {
-        const {data} = await supabase.from('categories').select().eq('id', id).maybeSingle()
+        const { data } = await supabase.from('categories').select().eq('id', id).maybeSingle();
 
-        setCategory(data)
-    }
+        setCategory(data);
+    };
+
+    const getFieldCategory = async () => {
+        const { data } = await supabase.from('category_inputs').select().eq('category_id', id);
+        setFields(data as ICategoryFields[]);
+    };
 
     useEffect(() => {
-        getCategory()
-    }, [])
+        getCategory();
+        if (getFields) {
+            getFieldCategory();
+        }
+    }, []);
 
     return {
-        category: (category ? category as ICategory : undefined)
-    }
-}
+        category: category ? (category as ICategory) : undefined,
+        fields,
+    };
+};
 
 export default useGetDetailCategory;

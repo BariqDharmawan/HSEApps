@@ -1,40 +1,53 @@
 import { Button, IconButton, TextInput } from 'react-native-paper';
 import BoxDivider from '../BoxDivider';
 import RenderCondition from '../RenderCondition';
-import { View } from 'react-native';
-import { PropsWithChildren } from 'react';
+import { StyleProp, View, ViewStyle } from 'react-native';
+import { PropsWithChildren, SetStateAction } from 'react';
 import CloseButton from '../CloseButton';
 import { inputTypes, TInputValue } from '@/constants/select-options';
 import RadioLabel from '../RadioLabel';
 import { IFormCategoryValues, IInitInputSection } from '@/utils/data';
-import { FormikProps } from 'formik';
+import { FormikErrors, FormikProps } from 'formik';
 import { isCheckedOrUnchecked } from '@/utils/strNumber';
 
 const FormCategoryInputs = ({
     onDelete,
-    isLast,
+    style,
     formik,
     currentDropdown,
     indexSection,
-    isDeleteAble,
     indexInput,
+    indexContainer,
 }: PropsWithChildren<{
+    indexContainer: number;
     currentDropdown: string[];
     onDelete: () => void;
-    isLast: boolean;
-    formik: FormikProps<IFormCategoryValues>;
+    style?: StyleProp<ViewStyle>;
+    formik: {
+        initialValues: IFormCategoryValues[];
+        setFieldValue: (
+            field: string,
+            value: any,
+            shouldValidate?: boolean
+        ) => Promise<void> | Promise<(FormikErrors<IFormCategoryValues> | undefined)[]>;
+        setValues: (
+            values: SetStateAction<IFormCategoryValues[]>,
+            shouldValidate?: boolean
+        ) => Promise<void> | Promise<(FormikErrors<IFormCategoryValues> | undefined)[]>;
+        values: IFormCategoryValues[];
+    };
     indexSection: number;
     indexInput: number;
-    isDeleteAble: boolean;
 }>) => {
+    const currentField = formik.values[indexContainer].section[indexSection].inputs[indexInput];
     return (
         <BoxDivider
             style={{
                 position: 'relative',
-                paddingBottom: isLast ? 40 : 0,
+                ...(style as object),
             }}
         >
-            <RenderCondition firstCondition={isDeleteAble} renderWhenTrue={<CloseButton onPress={onDelete} />} />
+            <RenderCondition firstCondition={indexInput !== 0} renderWhenTrue={<CloseButton onPress={onDelete} />} />
 
             <TextInput
                 label="Label input"
@@ -43,12 +56,10 @@ const FormCategoryInputs = ({
                     borderBottomWidth: 1,
                     borderBottomColor: '#C1C1C1',
                 }}
-                // value={formik.values[`section_${indexSection}`].inputs[indexInput]}
+                value={currentField.input_label}
                 onChangeText={(value) => {
-                    formik.setFieldValue(
-                        `${Object.keys(formik.values)[indexSection]}.inputs[${indexInput}].input_label`,
-                        value
-                    );
+                    currentField.input_label = value;
+                    formik.setValues([...formik.values]);
                 }}
                 blurOnSubmit
             />
@@ -70,27 +81,18 @@ const FormCategoryInputs = ({
                         <RadioLabel
                             label={type.value}
                             onPress={() => {
-                                formik.setFieldValue(
-                                    `${Object.keys(formik.values)[indexSection]}.inputs[${indexInput}].input_type`,
-                                    type.value
-                                );
+                                currentField.input_type = type.value;
+
+                                formik.setValues([...formik.values]);
                             }}
                             value={type.value}
-                            status={isCheckedOrUnchecked(
-                                formik.values[`section_${indexSection}`].inputs[indexInput][
-                                    `input_type` as keyof IInitInputSection
-                                ] === type.value
-                            )}
+                            status={isCheckedOrUnchecked(currentField.input_type === type.value)}
                         />
                     </View>
                 ))}
             </View>
             <RenderCondition
-                firstCondition={
-                    (formik.values[`section_${indexSection}`].inputs[indexInput][
-                        `input_type` as keyof IInitInputSection
-                    ] as TInputValue) === 'dropdown'
-                }
+                firstCondition={currentField.input_type === 'dropdown'}
                 renderWhenTrue={
                     <>
                         {currentDropdown.map((dropdown, indexDropdown) => (
@@ -103,18 +105,10 @@ const FormCategoryInputs = ({
                                         borderBottomColor: '#C1C1C1',
                                         flex: 1,
                                     }}
-                                    value={
-                                        formik.values[`section_${indexSection}`].inputs[indexInput].input_dropdown[
-                                            indexDropdown
-                                        ]
-                                    }
+                                    value={dropdown}
                                     onChangeText={(value) => {
-                                        currentDropdown[indexDropdown] = value;
-
-                                        formik.setFieldValue(
-                                            `section_${indexSection}.inputs[${indexInput}].input_dropdown`,
-                                            currentDropdown
-                                        );
+                                        currentField.input_dropdown[indexDropdown] = value;
+                                        formik.setValues([...formik.values]);
                                     }}
                                     blurOnSubmit
                                 />
@@ -136,14 +130,13 @@ const FormCategoryInputs = ({
                                                 ],
                                             }}
                                             onPress={() => {
-                                                formik.setFieldValue(
-                                                    `${Object.keys(formik.values)[indexSection]}.inputs[${indexInput}].input_dropdown`,
-                                                    formik.values[`section_${indexSection}`].inputs[
-                                                        indexInput
-                                                    ].input_dropdown.filter(
-                                                        (_, indexOption) => indexOption !== indexDropdown
-                                                    )
+                                                const restDropdown = currentField.input_dropdown.filter(
+                                                    (_, indexInputDropdown) => indexInputDropdown !== indexDropdown
                                                 );
+
+                                                currentField.input_dropdown = restDropdown;
+
+                                                formik.setValues([...formik.values]);
                                             }}
                                         />
                                     }
@@ -156,10 +149,9 @@ const FormCategoryInputs = ({
                                 alignSelf: 'flex-start',
                             }}
                             onPress={() => {
-                                formik.setFieldValue(
-                                    `${Object.keys(formik.values)[indexSection]}.inputs[${indexInput}].input_dropdown`,
-                                    [...currentDropdown, '']
-                                );
+                                currentField.input_dropdown = [...currentDropdown, ''];
+
+                                formik.setValues([...formik.values]);
                             }}
                         >
                             Tambah option

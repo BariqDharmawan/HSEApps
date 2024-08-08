@@ -4,8 +4,18 @@ import { ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 import { Button, Card, Text } from 'react-native-paper';
 
-const CardCategory = ({ title, btnLabel, imgSrc, id }: { id: string; imgSrc: string; title: string; btnLabel: ReactNode | string }) => {
-    const router = useRouter()
+const CardCategory = ({
+    title,
+    btnLabel,
+    imgSrc,
+    id,
+}: {
+    id: string;
+    imgSrc: string;
+    title: string;
+    btnLabel: ReactNode | string;
+}) => {
+    const router = useRouter();
 
     return (
         <Card style={styles.item} mode="outlined">
@@ -25,9 +35,15 @@ const CardCategory = ({ title, btnLabel, imgSrc, id }: { id: string; imgSrc: str
                 <Text style={styles.title} variant="titleMedium">
                     {truncateString(title, 20)}
                 </Text>
-                <Button mode="contained" style={styles.action} onPress={() => {
-                    router.push(`/category/${id}`)
-                }} dark compact>
+                <Button
+                    mode="contained"
+                    style={styles.action}
+                    onPress={() => {
+                        router.push(`/category/${id}`);
+                    }}
+                    dark
+                    compact
+                >
                     {btnLabel}
                 </Button>
             </Card.Content>
