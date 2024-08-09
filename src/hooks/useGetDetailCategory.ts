@@ -22,6 +22,7 @@ const useGetDetailCategory = ({ id, getFields }: { id: ICategory['id']; getField
         if (getFields) {
             getFieldCategory();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return {

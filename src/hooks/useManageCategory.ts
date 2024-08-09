@@ -1,4 +1,4 @@
-import { ICategory, IPayloadCategory, IPayloadInputCategory } from '@/utils/data';
+import { ICategory, IBaseCategoryField, IPayloadCategory } from '@/utils/data';
 import { supabase } from '@/utils/supabase';
 
 const useManageCategory = () => {
@@ -16,7 +16,7 @@ const useManageCategory = () => {
         };
     };
 
-    const addInputCategory = async (rows: IPayloadInputCategory[]) => {
+    const addInputCategory = async (rows: IBaseCategoryField[]) => {
         const { data, error } = await supabase.from('category_inputs').insert(rows).select();
 
         return {

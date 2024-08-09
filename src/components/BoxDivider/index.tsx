@@ -11,7 +11,7 @@ const BoxDivider = ({ style, children }: PropsWithChildren<{ style?: StyleProp<V
                 borderLeftWidth: 1,
                 borderRightWidth: 1,
                 borderBottomWidth: 1,
-                borderColor: '#e3e3e3',
+                borderColor: '#C5C6CC',
                 ...(style as object),
             }}
         >

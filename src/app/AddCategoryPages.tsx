@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { Button, IconButton, TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFormik } from 'formik';
-import BoxDivider from '@/components/BoxDivider';
 import PlusButton from '@/components/PlusButton';
-import { IFormCategoryValues, IInitInputSection, IPayloadInputCategory } from '@/utils/data';
+import { IFormCategoryValues, IInitInputSection } from '@/utils/data';
 import { generateRandomString } from '@/utils/strNumber';
 import { Colors } from '@/constants/Colors';
 import FormCategoryContainer from '@/components/FormCategoryContainer';
@@ -53,28 +52,13 @@ const AddCategoryPages = () => {
                 label: categoryName,
             });
 
-            // addInputCategory([
-            //     {
-            //         category_id: '',
-            //         inputs: [],
-            //         category_title: ''
-            //     },
-            //     {
-            //         category_id: '',
-            //         inputs: [],
-            //         category_title: ''
-            //     },
-            // ]);
-
-            const payload = values.map(value => ({
+            const payload = values.map((value) => ({
                 category_id: categoryId,
                 inputs: value.section,
-                container_title: value.container_title
-            }))
+                container_title: value.container_title,
+            }));
 
-            console.log(JSON.stringify(payload, null, 2));
-            
-            addInputCategory(payload)
+            addInputCategory(payload);
 
             router.push('/category');
         },
@@ -223,10 +207,10 @@ const AddCategoryPages = () => {
                         onPress={() => {
                             formikInputs.values.push({
                                 container_title: '',
-                                section: initSectionValue
-                            })
+                                section: initSectionValue,
+                            });
 
-                            formikInputs.setValues([...formikInputs.values])
+                            formikInputs.setValues([...formikInputs.values]);
                             // console.log(JSON.stringify(formikInputs.values, null, 2));
                             // formikInputs.values[indexContainer].section.push(initSectionValue[0])
                             // formikInputs.setValues([...formikInputs.values])
@@ -241,7 +225,7 @@ const AddCategoryPages = () => {
                         buttonColor={Colors.blue.material}
                         style={{
                             borderRadius: 8,
-                            marginBottom: 30
+                            marginBottom: 30,
                         }}
                         onPress={() => {
                             formikInputs.handleSubmit();

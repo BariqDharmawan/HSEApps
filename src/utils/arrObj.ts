@@ -19,11 +19,6 @@ const removeAndReorderKeys = (keyToRemove: string, obj: object) => {
     return reorderedObj;
 };
 
-interface Section {
-    inputs: any[][];
-    title: string;
-}
-
 const resetKeys = (obj: object) => {
     const newObj = {};
     const keys = Object.keys(obj);

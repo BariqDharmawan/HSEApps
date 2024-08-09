@@ -1,12 +1,10 @@
 import { Colors } from '@/constants/Colors';
 import BoxDivider from '../BoxDivider';
 import { PropsWithChildren, SetStateAction } from 'react';
-import { Button, Card, IconButton, Text, TextInput } from 'react-native-paper';
-import { FormikErrors, FormikProps } from 'formik';
+import { IconButton, TextInput } from 'react-native-paper';
+import { FormikErrors } from 'formik';
 import { IFormCategoryValues } from '@/utils/data';
 import RenderCondition from '../RenderCondition';
-import { resetKeys } from '@/utils/arrObj';
-import { generateRandomString } from '@/utils/strNumber';
 
 const FormCategoryContainer = ({
     children,
@@ -58,7 +56,7 @@ const FormCategoryContainer = ({
                     <IconButton
                         icon="close"
                         mode="contained"
-                        iconColor='white'
+                        iconColor="white"
                         style={{
                             marginTop: 20,
                             position: 'absolute',
@@ -66,12 +64,12 @@ const FormCategoryContainer = ({
                             top: 0,
                             transform: [
                                 {
-                                    translateY: -40
-                                }
+                                    translateY: -40,
+                                },
                             ],
                             borderWidth: 1,
                             backgroundColor: Colors.red.material,
-                            borderColor: Colors.red.material
+                            borderColor: Colors.red.material,
                         }}
                         onPress={() => {
                             formik.setValues([

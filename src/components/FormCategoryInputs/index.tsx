@@ -4,10 +4,10 @@ import RenderCondition from '../RenderCondition';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { PropsWithChildren, SetStateAction } from 'react';
 import CloseButton from '../CloseButton';
-import { inputTypes, TInputValue } from '@/constants/select-options';
+import { inputTypes } from '@/constants/select-options';
 import RadioLabel from '../RadioLabel';
-import { IFormCategoryValues, IInitInputSection } from '@/utils/data';
-import { FormikErrors, FormikProps } from 'formik';
+import { IFormCategoryValues } from '@/utils/data';
+import { FormikErrors } from 'formik';
 import { isCheckedOrUnchecked } from '@/utils/strNumber';
 
 const FormCategoryInputs = ({

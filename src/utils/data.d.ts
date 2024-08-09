@@ -13,7 +13,7 @@ export type IFormCategoryValues = {
 export interface IInitInputSection {
     input_id: string;
     input_label: string;
-    input_type: string;
+    input_type: TInputValue;
     input_dropdown: string[];
 }
 
@@ -30,15 +30,15 @@ export interface IPayloadCategory {
     id?: string;
 }
 
-export interface IPayloadInputCategory {
-    inputs: object;
+export interface IBaseCategoryField {
+    inputs: IInitInputSection[];
     category_id: string;
     container_title: string;
 }
 
 export interface ICategoryFields {
-    inputs: string;
-    category_id: string;
-    section_title: string;
     id: number;
+    inputs: {title: string; inputs: IInitInputSection[]}[]
+    category_id: string;
+    container_title: string;
 }

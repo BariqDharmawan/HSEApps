@@ -1,14 +1,19 @@
+import BoxDivider from '@/components/BoxDivider';
+import FormControl from '@/components/FormControl';
 import useGetDetailCategory from '@/hooks/useGetDetailCategory';
+import { indexToLetter, TIndexLetter } from '@/utils/strNumber';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { FlatList, SafeAreaView, StyleSheet, View } from 'react-native';
 import { Card, Checkbox, Text } from 'react-native-paper';
 
 const CategoryDetail = () => {
     const { id } = useLocalSearchParams();
-    const { category, fields } = useGetDetailCategory({
+    const { category, fields: containerFields } = useGetDetailCategory({
         id: String(id),
         getFields: true,
     });
+    console.log('containerFields', JSON.stringify(containerFields, null, 2));
+    
 
     return (
         <SafeAreaView style={styles.container}>
@@ -18,44 +23,73 @@ const CategoryDetail = () => {
                 }}
             />
             <FlatList
-                data={fields}
+                data={containerFields}
                 contentContainerStyle={{
                     gap: 20,
                 }}
-                renderItem={({ item: field }) => (
-                    <Card
-                        style={{
-                            borderRadius: 8,
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <Card.Content
-                            style={{
-                                backgroundColor: 'white',
-                                borderWidth: 1,
-                                borderColor: '#E6E6E6',
-                            }}
-                        >
-                            <View
+                renderItem={({ item: containerField, index: indexContainer }) => (
+                    <View>
+                        <View style={{
+                            marginBottom: 16
+                        }}>
+                            <Text
                                 style={{
-                                    alignItems: 'center',
-                                    flexDirection: 'row',
-                                    justifyContent: 'space-between',
+                                    color: '#1F2024',
+                                    fontWeight: 'medium',
+                                    fontSize: 20,
+                                    textTransform: 'capitalize',
                                 }}
                             >
-                                <Text
-                                    style={{
-                                        textTransform: 'capitalize',
-                                    }}
-                                >
-                                    {field.section_title}
+                                {indexToLetter(indexContainer as TIndexLetter)}. {containerField.container_title}
+                            </Text>
+                            <View
+                                style={{
+                                    marginTop: 6,
+                                    maxWidth: 100,
+                                    width: '25%',
+                                    height: 2,
+                                    backgroundColor: '#1F2024',
+                                }}
+                            />
+                        </View>
+
+                        {containerField.inputs.map((eachSection, indexSection) => (
+                            <BoxDivider style={{
+                                marginBottom: 20,
+                            }}>
+                            
+                                <View style={{
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: 14
+                                }}>
+                                <Text style={{
+                                    fontSize: 18
+                                }}>
+                                    {indexToLetter(indexContainer as TIndexLetter)}{indexSection + 1}. {eachSection.title}
                                 </Text>
-                                <Checkbox status="unchecked" />
-                            </View>
-                        </Card.Content>
-                    </Card>
+                                <Checkbox
+                                    status={'unchecked'}
+                                    onPress={() => {
+                                        // setChecked(!checked);
+                                    }}
+                                />
+                                </View>
+
+                                {eachSection.inputs.map(eachInput => (
+                                    <FormControl options={eachInput.input_type === 'dropdown' ? eachInput.input_dropdown.map(eachDropdown => ({
+                                        label: eachDropdown,
+                                        value: eachDropdown
+                                    })) : []} type={eachInput.input_type} label={eachInput.input_label} onChangeText={() => {}} value=''/>
+                                ))}
+                            
+                            </BoxDivider>
+                        ))}
+                        
+                    </View>
                 )}
-                keyExtractor={(item) => item.section_title.replaceAll(' ', '-')}
+                keyExtractor={(item) => item.container_title.replaceAll(' ', '-')}
             />
         </SafeAreaView>
     );
